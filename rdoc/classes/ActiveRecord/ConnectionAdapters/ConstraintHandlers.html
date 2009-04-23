@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActiveRecord::ConnectionAdapters::ConstraintHandlers [PostgresConstraints]</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }<\/style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActiveRecord::ConnectionAdapters::ConstraintHandlers</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+
+
+                <a href="../../../files/lib/activerecord_constraint_handlers_rb.html">
+
+                lib/activerecord_constraint_handlers.rb
+
+                </a>
+
+
+        <br />
+
+            </td>
+        </tr>
+
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+Constraint Handlers is a module to catch and handle the exceptions produced
+by failed constraints. The current implementation ties only to the
+create_or_update path which is after validations are done. This allows the
+database to have constraints but preserve the API and semantics of
+Model.save and Model.save!
+</p>
+<p>
+The three hooks made available is a hook when the connection is first
+created. At that point, the database adapter specific module is loaded into
+the base. It does not work to rummage around in the database during this
+hook. This hook is done via <a
+href="ConstraintConnectionHook.html">ConstraintConnectionHook</a>.
+</p>
+<p>
+The second hook is done by the adapter specific constrait handler. The call
+to create_or_update is captured. If an exception is thrown, then the
+adapter specific handle_create_or_update_exception is called.
+</p>
+<p>
+The third hook is also in the create_or_update. Before the cal to
+create_or_update_witout_constraints is done, the class specific pre_fetch
+method is called. Again, this method is included into the class of the
+model at the time the connection is created.
+</p>
+
+    </div>
+
+   </div>
+
+
+  </div>
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Module <a href="ConstraintHandlers/Postgresql.html" class="link">ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql</a><br />
+
+    </div>
+
+
+
+
+    <!-- if method_list -->
+
+
+
+
+  </div>
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

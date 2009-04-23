@@ -1,0 +1,11 @@
+.DS_Store
+TAGS
+*~
+log/*.log
+tmp/**/*
+config/database.yml
+config/retain.yml
+db/*.sqlite3
+REVISION
+log
+tmp

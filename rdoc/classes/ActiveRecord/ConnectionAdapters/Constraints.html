@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActiveRecord::ConnectionAdapters::Constraints [PostgresConstraints]</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }<\/style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActiveRecord::ConnectionAdapters::Constraints</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+
+
+                <a href="../../../files/lib/activerecord_constraints_rb.html">
+
+                lib/activerecord_constraints.rb
+
+                </a>
+
+
+        <br />
+
+            </td>
+        </tr>
+
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+Module that will be included in other modules to reduce duplication. It
+implements the conversion from a list of options that specify a constraint
+to the SQL statement that implements the constraint.
+</p>
+<p>
+A constraint is broken into parts:
+</p>
+<ol>
+<li>An optional constraint name
+
+</li>
+<li>One of:
+
+<ol>
+<li>unique constraint
+
+</li>
+<li>foreign key constraint
+
+</li>
+<li>check constraint
+
+</li>
+</ol>
+</li>
+<li>An optional deferrable clause
+
+</li>
+<li>An optional initially clause
+
+</li>
+</ol>
+<p>
+There are two places to declare a constraint. PostgreSQL calls these column
+constraints and table constraints. A column constraint can have a few
+things that a table constraint can not such as not null or null
+constraints. Those are handled elsewhere in Active Record although they
+might get moved in to here since this code allows those constraints to be
+named which may have some advantages.
+</p>
+<p>
+The SQL syntax for the column and table constraints are very similar so the
+routines handle both with a flag that specifies if the routine is being
+called to create a column constraint or a table constraint.
+</p>
+<p>
+The name of a constraint can be specified with either a <tt>:name =&gt;
+&quot;constraint_name&quot;</tt> option or, for example, <tt>:unique =&gt;
+&quot;constraint_name&quot;</tt>. The main advantage to this is to allow a
+multiple named constraints in the same column specification.
+</p>
+
+    </div>
+
+   </div>
+
+
+  </div>
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Module <a href="Constraints/Abstract.html" class="link">ActiveRecord::ConnectionAdapters::Constraints::Abstract</a><br />
+Module <a href="Constraints/Postgresql.html" class="link">ActiveRecord::ConnectionAdapters::Constraints::Postgresql</a><br />
+Module <a href="Constraints/Sql.html" class="link">ActiveRecord::ConnectionAdapters::Constraints::Sql</a><br />
+
+    </div>
+
+
+
+
+    <!-- if method_list -->
+
+
+
+
+  </div>
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,193 @@
+= ActiveRecord Constraints
+
+This plugin currently implements constraints for PostgreSQL only.  It
+should provide a structure for a more abstract implementation.
+
+Currently it implements foreign key constraints, unique
+constraints and check constraints.  null and not null constraints
+would be easy to add but they may collide with preexisting Active
+Record code.
+
+=== Examples
+
+First the easy examples:
+
+Unique Constraint:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # name will have a "unique" constraint
+	  t.string :name, :null => false, :unique => true
+	end
+      end
+    end
+
+Trivial foreign key constraint:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # bar_id will now be a foreign key constraint column id in table bar
+	  t.integer :bar_id, :null => false, :reference => true
+	end
+      end
+    end
+
+This is actually a short hand for:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # bar_id will now be a foreign key constraint column id in table bar
+	  t.integer :bar_id, :null => false, :reference => true,
+	      :table_name => :bars, :foreign_key => :id
+	end
+      end
+    end
+
+If the constraint can not be done this easily, there are also unique,
+reference, and check methods added to
+ActiveRecord::ConnectionAdapters::TableDefinition.  So, for example:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  t.string :name1, :null => false
+	  t.string :name2, :null => false
+	  t.string :name3, :null => false
+	  t.unique [ :name1, :name2, :name3 ]
+	end
+      end
+    end
+
+Or perhaps:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  t.integer :field1, :null => false
+	  t.integer :field2, :null => false
+	  t.integer :field3, :null => false
+	  t.reference [ :field1, :field2, :field3 ],
+	      :table_name => :bars,
+	      :foreign_key => [ :bar_field1, :bar_field2, :bar_field3 ]
+	end
+      end
+    end
+
+Thats the front half.  The back half is catching the exceptions during
+a save.  For example, if we have:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # name will have a "unique" constraint
+	  t.string :name, :null => false, :unique => true
+	end
+      end
+    end
+
+And then if we do:
+
+  foo = Foo.new()
+  foo.save
+
+The save will throw an exception but the semantics of foo.save is to
+return false if the constraints (validations) fail.  To keep this API,
+the exception is caught and parsed trying to do what the standard
+Rails constraints do.  In the above example, foo.errors.on(:name) will
+be set to "can't be blank".
+
+Contraints may also be named.  This allows the rescue to call a
+specific method by the same name as the constraint.
+
+=== Help with testing and fixtures
+
+To work with the new fixtures, you must patch Rails:
+
+    module ActiveRecord
+      module ConnectionAdapters
+	class PostgreSQLAdapter
+	  def disable_referential_integrity(&block)
+	    transaction {
+	      begin
+		execute "SET CONSTRAINTS ALL DEFERRED"
+		yield
+	      ensure
+		execute "SET CONSTRAINTS ALL IMMEDIATE"
+	      end
+	    }
+	  end
+	end
+      end
+    end
+
+Setting the schema_format to :sql is also a good idea.  In
+environment.rb add:
+
+  config.active_record.schema_format = :sql
+
+And then you must make all the foreign key constraints deferrable.
+So, the above example becomes:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # bar_id will now be a foreign key constraint column id in table bar
+	  t.integer :bar_id, :null => false, :reference => true,
+	      :deferrable => true
+	end
+      end
+    end
+
+I like to have my foreign keys cascade on delete so now we have:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # bar_id will now be a foreign key constraint on column id in table bar
+	  t.integer :bar_id, :null => false, :reference => true,
+	      :deferrable => true, :delete => :cascade
+	end
+      end
+    end
+
+But really I hate typing all that so, it now becomes:
+
+    class CreateFoos < ActiveRecord::Migration
+      def self.up
+	create_table :foos do |t|
+	  # bar_id will now be a foreign key constraint column id in table bar
+	  t.fk :bar_id
+	end
+      end
+    end
+
+_fk_ is currently a silly stupid thing that needs to be fleshed out
+more but the intent to make a "foreign key" something that Rails will
+grok.
+
+=== Future Directions
+
+All the work code is in
+ActiveRecord::ConnectionAdapters::Constraints.  For other data base
+engines, this module 
+
+Copyright (c) 2009 Perry Smith
+
+This file is part of activerecord_constraints.
+
+activerecord_constraints is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+activerecord_constraints is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with activerecord_constraints.  If not, see
+<http://www.gnu.org/licenses/>.

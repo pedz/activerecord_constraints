@@ -1,0 +1,569 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql::ClassMethods [PostgresConstraints]</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }<\/style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql::ClassMethods</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+
+
+                <a href="../../../../../files/lib/activerecord_constraint_handlers_rb.html">
+
+                lib/activerecord_constraint_handlers.rb
+
+                </a>
+
+
+        <br />
+
+            </td>
+        </tr>
+
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+We need class methods and class instance variables to hold the data. We
+want them in the class so that the work is done only once for the life of
+the application. In the PostgreSQL case, we leverage off of <a
+href="../../../Base.html">ActiveRecord::Base</a> by creating three nested
+models so they are hidden syntactically that use the model as their base
+class so that they use the same connection as the model itself. This allows
+other models to use other connections and the data is kept separate.
+</p>
+
+    </div>
+
+   </div>
+
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+
+        <a href="#M000013">constraint_to_columns</a>&nbsp;&nbsp;
+
+        <a href="#M000011">create_subclasses</a>&nbsp;&nbsp;
+
+        <a href="#M000005">pg_attribute_constant</a>&nbsp;&nbsp;
+
+        <a href="#M000010">pg_attribute_hash</a>&nbsp;&nbsp;
+
+        <a href="#M000009">pg_attributes</a>&nbsp;&nbsp;
+
+        <a href="#M000006">pg_class</a>&nbsp;&nbsp;
+
+        <a href="#M000003">pg_class_constant</a>&nbsp;&nbsp;
+
+        <a href="#M000004">pg_constraint_constant</a>&nbsp;&nbsp;
+
+        <a href="#M000008">pg_constraint_hash</a>&nbsp;&nbsp;
+
+        <a href="#M000007">pg_constraints</a>&nbsp;&nbsp;
+
+        <a href="#M000012">pre_fetch</a>&nbsp;&nbsp;
+
+      </div>
+    </div>
+
+  </div>
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+    <!-- if method_list -->
+
+    <div id="methods">
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+
+      <div id="method-M000013" class="method-detail">
+        <a name="M000013"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000013" class="method-signature">
+
+          <span class="method-name">constraint_to_columns</span><span class="method-args">(constraint)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Converts the constraint name into a list of column names.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000013-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000013-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 170</span>
+170:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">constraint_to_columns</span>(<span class="ruby-identifier">constraint</span>)
+171:             <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;constraint_to_columns: '#{constraint}' (#{constraint.class})&quot;</span>)
+172: 
+173:             <span class="ruby-comment cmt"># Should never hit this now... added during debugging.</span>
+174:             <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">pg_constraint_hash</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">constraint</span>)
+175:               <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;constraint_to_columns: constraint not found&quot;</span>)
+176:               <span class="ruby-keyword kw">return</span>
+177:             <span class="ruby-keyword kw">end</span>
+178:             <span class="ruby-comment cmt"># pg_constraint_hash is a hash from the contraint name to</span>
+179:             <span class="ruby-comment cmt"># the constraint.  The conkey is a string of the form:</span>
+180:             <span class="ruby-comment cmt"># +{2,3,4}+ (with the curly braces).  The numbers are</span>
+181:             <span class="ruby-comment cmt"># column indexes which we pull out from pg_attribute and</span>
+182:             <span class="ruby-comment cmt"># convert to a name.  Note that the PostgreSQL tables are</span>
+183:             <span class="ruby-comment cmt"># singular in name: pg_constraint and pg_attribute</span>
+184:             <span class="ruby-identifier">k</span> = <span class="ruby-identifier">pg_constraint_hash</span>[<span class="ruby-identifier">constraint</span>].<span class="ruby-identifier">conkey</span>
+185:             <span class="ruby-identifier">k</span>[<span class="ruby-value">1</span> <span class="ruby-operator">...</span> (<span class="ruby-identifier">k</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>)].
+186:               <span class="ruby-identifier">split</span>(<span class="ruby-value str">','</span>).
+187:               <span class="ruby-identifier">map</span>{ <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">pg_attribute_hash</span>[<span class="ruby-identifier">s</span>.<span class="ruby-identifier">to_i</span>].<span class="ruby-identifier">attname</span> }
+188:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000011" class="method-detail">
+        <a name="M000011"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000011" class="method-signature">
+
+          <span class="method-name">create_subclasses</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+At the time of the first call, we create the models needed for the code
+above as a nested subclass of the model using the model as the base.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000011-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000011-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 132</span>
+132:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_subclasses</span>
+133:             <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-value str">&quot;class PgClass &lt; \#{self}\nset_table_name \&quot;pg_class\&quot;\nset_primary_key \&quot;oid\&quot;\nend\n\nclass PgAttribute &lt; \#{self}\nset_table_name \&quot;pg_attribute\&quot;\nset_primary_key \&quot;oid\&quot;\nbelongs_to :attrel, :class_name =&gt; \&quot;PgClass\&quot;, :foreign_key =&gt; :attrelid\nend\n\nclass PgConstraint &lt; \#{self}\nset_table_name \&quot;pg_constraint\&quot;\nset_primary_key \&quot;oid\&quot;\nbelongs_to :conrel, :class_name =&gt; \&quot;PgClass\&quot;, :foreign_key =&gt; :conrelid\nend\n&quot;</span>
+134:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000005" class="method-signature">
+
+          <span class="method-name">pg_attribute_constant</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Create the constant for the PgAttribute nested model.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000005-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 83</span>
+83:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_attribute_constant</span>
+84:             <span class="ruby-node">&quot;#{self}::PgAttribute&quot;</span>.<span class="ruby-identifier">constantize</span>
+85:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000010" class="method-detail">
+        <a name="M000010"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000010" class="method-signature">
+
+          <span class="method-name">pg_attribute_hash</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Accessor for the attribute hash
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000010-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000010-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 125</span>
+125:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_attribute_hash</span>
+126:             <span class="ruby-ivar">@pg_attribute_hash</span>
+127:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000009" class="method-detail">
+        <a name="M000009"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000009" class="method-signature">
+
+          <span class="method-name">pg_attributes</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Find the attributes for this model
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000009-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000009-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 113</span>
+113:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_attributes</span>
+114:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@pg_attributes</span>.<span class="ruby-identifier">nil?</span>
+115:               <span class="ruby-ivar">@pg_attributes</span> = <span class="ruby-identifier">pg_attribute_constant</span>.<span class="ruby-identifier">find</span>(<span class="ruby-identifier">:all</span>,
+116:                                                           <span class="ruby-identifier">:joins</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:attrel</span>,
+117:                                                           <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-identifier">:pg_class</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-identifier">:relname</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">table_name</span> }})
+118:               <span class="ruby-ivar">@pg_attribute_hash</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+119:               <span class="ruby-ivar">@pg_attributes</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@pg_attribute_hash</span>[<span class="ruby-identifier">a</span>.<span class="ruby-identifier">attnum</span>] = <span class="ruby-identifier">a</span> }
+120:             <span class="ruby-keyword kw">end</span>
+121:             <span class="ruby-ivar">@pg_attributes</span>
+122:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000006" class="method-signature">
+
+          <span class="method-name">pg_class</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Turns out, we don&#8217;t really use this...
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000006-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 88</span>
+88:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_class</span>
+89:             <span class="ruby-ivar">@pg_class</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">pg_class_constant</span>.<span class="ruby-identifier">find_by_relname</span>(<span class="ruby-identifier">table_name</span>)
+90:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000003" class="method-detail">
+        <a name="M000003"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000003" class="method-signature">
+
+          <span class="method-name">pg_class_constant</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Create the constant for the PgClass nested model.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000003-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 73</span>
+73:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_class_constant</span>
+74:             <span class="ruby-node">&quot;#{self}::PgClass&quot;</span>.<span class="ruby-identifier">constantize</span>
+75:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000004" class="method-signature">
+
+          <span class="method-name">pg_constraint_constant</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Create the constant for the PgConstraint nested model.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000004-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 78</span>
+78:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_constraint_constant</span>
+79:             <span class="ruby-node">&quot;#{self}::PgConstraint&quot;</span>.<span class="ruby-identifier">constantize</span>
+80:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000008" class="method-detail">
+        <a name="M000008"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000008" class="method-signature">
+
+          <span class="method-name">pg_constraint_hash</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Accessor for the constraint hash
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000008-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 108</span>
+108:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_constraint_hash</span>
+109:             <span class="ruby-ivar">@pg_constraint_hash</span>
+110:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000007" class="method-detail">
+        <a name="M000007"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000007" class="method-signature">
+
+          <span class="method-name">pg_constraints</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Find the constraints for this model / table
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000007-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 93</span>
+ 93:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pg_constraints</span>
+ 94:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@pg_constraints</span>.<span class="ruby-identifier">nil?</span>
+ 95:               <span class="ruby-ivar">@pg_constraints</span> = <span class="ruby-identifier">pg_constraint_constant</span>.<span class="ruby-identifier">find</span>(<span class="ruby-identifier">:all</span>,
+ 96:                                                             <span class="ruby-identifier">:joins</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:conrel</span>,
+ 97:                                                             <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-identifier">:pg_class</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-identifier">:relname</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">table_name</span> }})
+ 98:               <span class="ruby-ivar">@pg_constraint_hash</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+ 99:               <span class="ruby-ivar">@pg_constraints</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+100:                 <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Adding '#{c.conname}' to constraint_hash&quot;</span>)
+101:                 <span class="ruby-ivar">@pg_constraint_hash</span>[<span class="ruby-identifier">c</span>.<span class="ruby-identifier">conname</span>] = <span class="ruby-identifier">c</span>
+102:               }
+103:             <span class="ruby-keyword kw">end</span>
+104:             <span class="ruby-ivar">@pg_constraints</span>
+105:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000012" class="method-detail">
+        <a name="M000012"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000012" class="method-signature">
+
+          <span class="method-name">pre_fetch</span><span class="method-args">()</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+We can not rummage around in the database after an error has occurred or we
+will get back more errors that an error has already occurred and further
+queries will be ignored. So, we pre-fetch the system tables that we need
+and save them in our pockets.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000012-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000012-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 159</span>
+159:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pre_fetch</span>
+160:             <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;pre_fetch #{self} #{table_name} #{@pg_class.nil?}&quot;</span>)
+161:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@pg_class</span>.<span class="ruby-identifier">nil?</span>
+162:               <span class="ruby-identifier">create_subclasses</span>
+163:               <span class="ruby-identifier">pg_class</span>
+164:               <span class="ruby-identifier">pg_constraints</span>
+165:               <span class="ruby-identifier">pg_attributes</span>
+166:             <span class="ruby-keyword kw">end</span>
+167:           <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+
+
+  </div>
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+
+postgres:
+  adapter: postgresql
+  username: postgres
+  database: activerecord_constraints_plugin_test
+  min_messages: ERROR
+
+
+postgres2:
+  adapter: postgresql
+  username: postgres
+  database: activerecord_constraints_plugin_test2
+  min_messages: ERROR
