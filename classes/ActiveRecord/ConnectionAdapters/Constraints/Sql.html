@@ -1,0 +1,620 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActiveRecord::ConnectionAdapters::Constraints::Sql [PostgresConstraints]</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }<\/style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActiveRecord::ConnectionAdapters::Constraints::Sql</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+
+
+                <a href="../../../../files/lib/activerecord_constraints_rb.html">
+
+                lib/activerecord_constraints.rb
+
+                </a>
+
+
+        <br />
+
+            </td>
+        </tr>
+
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+Generallized SQL constraint code.
+</p>
+
+    </div>
+
+   </div>
+
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+
+        <a href="#M000023">check_str</a>&nbsp;&nbsp;
+
+        <a href="#M000026">column_to_str</a>&nbsp;&nbsp;
+
+        <a href="#M000019">deferrable_str</a>&nbsp;&nbsp;
+
+        <a href="#M000016">has_constraint</a>&nbsp;&nbsp;
+
+        <a href="#M000020">initially_str</a>&nbsp;&nbsp;
+
+        <a href="#M000017">name_str</a>&nbsp;&nbsp;
+
+        <a href="#M000025">reference_str</a>&nbsp;&nbsp;
+
+        <a href="#M000021">suffix_str</a>&nbsp;&nbsp;
+
+        <a href="#M000018">table_str</a>&nbsp;&nbsp;
+
+        <a href="#M000024">to_db_string</a>&nbsp;&nbsp;
+
+        <a href="#M000022">unique_str</a>&nbsp;&nbsp;
+
+      </div>
+    </div>
+
+  </div>
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+    <!-- if method_list -->
+
+    <div id="methods">
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000023" class="method-signature">
+
+          <span class="method-name">check_str</span><span class="method-args">(column_name, options, column_constraint)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to produce the string for a CHECK constraint. The
+alternatives here are: (the first two are named, the last two are unnamed)
+1) :check => &#8220;constraint_name&#8220;, :expr => &#8220;check
+expression&#8221; 2) :check => true, :name =>
+&#8220;constraint_name&#8220;,
+</p>
+<pre>
+       :expr =&gt; &quot;check expression&quot;
+</pre>
+<p>
+3) :check => true, :expr => &#8220;check expression&#8221; 4) :check =>
+&#8220;check expression&#8220;
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000023-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 142</span>
+142:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_str</span>(<span class="ruby-identifier">column_name</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">column_constraint</span>)
+143:           <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;IN: Constraints#check_str&quot;</span>)
+144:           <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">has_constraint</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">:check</span>)
+145:           
+146:           <span class="ruby-comment cmt"># Have to dance a little bit here...</span>
+147:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:check</span>] <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>
+148:             <span class="ruby-identifier">expr</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:expr</span>]
+149:             <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:name</span>]
+150:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:expr</span>)
+151:             <span class="ruby-identifier">expr</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:expr</span>]
+152:             <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:check</span>]
+153:           <span class="ruby-keyword kw">else</span>
+154:             <span class="ruby-identifier">expr</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:check</span>]
+155:             <span class="ruby-identifier">name</span> = <span class="ruby-keyword kw">nil</span>
+156:           <span class="ruby-keyword kw">end</span>
+157:           <span class="ruby-identifier">constraint_name</span> = <span class="ruby-identifier">name_str</span>({ <span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">:check</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span> }, <span class="ruby-identifier">:check</span>)
+158:           <span class="ruby-comment cmt"># column string is not part of CHECK constraints</span>
+159:           <span class="ruby-identifier">suffix_spec</span> = <span class="ruby-identifier">suffix_str</span>(<span class="ruby-identifier">options</span>)
+160:           <span class="ruby-identifier">constraint_name</span> <span class="ruby-operator">+</span> <span class="ruby-node">&quot; CHECK ( #{expr} )&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">suffix_spec</span>
+161:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000026" class="method-detail">
+        <a name="M000026"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000026" class="method-signature">
+
+          <span class="method-name">column_to_str</span><span class="method-args">(column)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to return the column or the array of columns as a string.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000026-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000026-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 204</span>
+204:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">column_to_str</span>(<span class="ruby-identifier">column</span>)
+205:           <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;IN: Constraints#column_to_str&quot;</span>)
+206:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">column</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>
+207:             <span class="ruby-identifier">column</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;\&quot;#{c.to_s}\&quot;&quot;</span>}.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;, &quot;</span>)
+208:           <span class="ruby-keyword kw">else</span>
+209:             <span class="ruby-node">&quot;\&quot;#{column.to_s}\&quot;&quot;</span>
+210:           <span class="ruby-keyword kw">end</span>
+211:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000019" class="method-detail">
+        <a name="M000019"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000019" class="method-signature">
+
+          <span class="method-name">deferrable_str</span><span class="method-args">(options)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Creates the DEFERRABLE string
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000019-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000019-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 96</span>
+ 96:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">deferrable_str</span>(<span class="ruby-identifier">options</span>)
+ 97:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:deferrable</span>)
+ 98:             ((<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:deferrable</span>] <span class="ruby-operator">==</span> <span class="ruby-keyword kw">false</span>) <span class="ruby-operator">?</span> <span class="ruby-value str">&quot; NOT&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>) <span class="ruby-operator">+</span>
+ 99:               <span class="ruby-value str">&quot; DEFERRABLE&quot;</span>
+100:           <span class="ruby-keyword kw">else</span>
+101:             <span class="ruby-value str">&quot;&quot;</span>
+102:           <span class="ruby-keyword kw">end</span>
+103:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000016" class="method-detail">
+        <a name="M000016"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000016" class="method-signature">
+
+          <span class="method-name">has_constraint</span><span class="method-args">(options, constraint_type)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to return true if the options has the indicated constraint
+type.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000016-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000016-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 67</span>
+67:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">has_constraint</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">constraint_type</span>)
+68:           <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">constraint_type</span>) <span class="ruby-operator">&amp;&amp;</span>
+69:             <span class="ruby-identifier">options</span>[<span class="ruby-identifier">constraint_type</span>] <span class="ruby-operator">!=</span> <span class="ruby-keyword kw">false</span>
+70:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000020" class="method-detail">
+        <a name="M000020"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000020" class="method-signature">
+
+          <span class="method-name">initially_str</span><span class="method-args">(options)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Creates the INITIALLY string
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000020-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 106</span>
+106:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initially_str</span>(<span class="ruby-identifier">options</span>)
+107:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:initially</span>)
+108:             <span class="ruby-identifier">ref_str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; INITIALLY #{to_db_string(options[:initially])}&quot;</span>
+109:           <span class="ruby-keyword kw">else</span>
+110:             <span class="ruby-value str">&quot;&quot;</span>
+111:           <span class="ruby-keyword kw">end</span>
+112:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000017" class="method-detail">
+        <a name="M000017"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000017" class="method-signature">
+
+          <span class="method-name">name_str</span><span class="method-args">(options, constraint_type)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to produce the named part of a named constraint: passed the
+full set of options along with the type of the constraint, e.g. :unique.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000017-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000017-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 75</span>
+75:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">name_str</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">constraint_type</span>)
+76:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">constraint_type</span>] <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>
+77:             <span class="ruby-identifier">n</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:name</span>]
+78:           <span class="ruby-keyword kw">else</span>
+79:             <span class="ruby-identifier">n</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">option_name</span>]
+80:           <span class="ruby-keyword kw">end</span>
+81:           <span class="ruby-identifier">n</span>.<span class="ruby-identifier">blank?</span> <span class="ruby-value">? </span><span class="ruby-value str">&quot;&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot; CONSTRAINT #{n}&quot;</span>
+82:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000025" class="method-detail">
+        <a name="M000025"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000025" class="method-signature">
+
+          <span class="method-name">reference_str</span><span class="method-args">(column, options, column_constraint)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to produce the string for a FOREIGN KEY constraint. Like a
+UNIQUE constraint, the optional name of the constraint can either the
+string assigned to the :reference option or a separate :name option.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000025-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000025-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 176</span>
+176:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reference_str</span>(<span class="ruby-identifier">column</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">column_constraint</span>)
+177:           <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;IN: Constraints#reference_str&quot;</span>)
+178:           <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">has_constraint</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">:reference</span>)
+179:           <span class="ruby-identifier">constraint_name</span> = <span class="ruby-identifier">name_str</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">:reference</span>)
+180:           <span class="ruby-identifier">column_spec</span> = <span class="ruby-identifier">table_str</span>(<span class="ruby-identifier">column_name</span>, <span class="ruby-identifier">column_constraint</span>,
+181:                                   <span class="ruby-value str">&quot;FOREIGN KEY &quot;</span>)
+182:           <span class="ruby-identifier">local_options</span> = { }
+183:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span> = <span class="ruby-regexp re">/(.*)_id$/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">column</span>.<span class="ruby-identifier">to_s</span>)
+184:             <span class="ruby-identifier">local_options</span>[<span class="ruby-identifier">:table_name</span>] = <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">pluralize</span>
+185:             <span class="ruby-identifier">local_options</span>[<span class="ruby-identifier">:foreign_key</span>] = <span class="ruby-value str">&quot;id&quot;</span>
+186:           <span class="ruby-keyword kw">end</span>
+187:           <span class="ruby-identifier">local_options</span>.<span class="ruby-identifier">merge!</span>(<span class="ruby-identifier">options</span>)
+188:           <span class="ruby-identifier">ref_column_str</span> = <span class="ruby-identifier">column_to_str</span>(<span class="ruby-identifier">local_options</span>[<span class="ruby-identifier">:foreign_key</span>])
+189:           <span class="ruby-identifier">ref_str</span> = <span class="ruby-node">&quot; REFERENCES #{local_options[:table_name]} (#{ref_column_str})&quot;</span>
+190:           
+191:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">local_options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:delete</span>)
+192:             <span class="ruby-identifier">ref_str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; ON DELETE #{to_db_string(local_options[:delete])}&quot;</span>
+193:           <span class="ruby-keyword kw">end</span>
+194:           
+195:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">local_options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:update</span>)
+196:             <span class="ruby-identifier">ref_str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; ON UPDATE #{to_db_string(local_options[:update])}&quot;</span>
+197:           <span class="ruby-keyword kw">end</span>
+198:           
+199:           <span class="ruby-identifier">constraint_name</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">column_spec</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">ref_str</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">suffix_spec</span>(<span class="ruby-identifier">options</span>)
+200:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000021" class="method-signature">
+
+          <span class="method-name">suffix_str</span><span class="method-args">(options)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Creates the suffix options deferrable and initially
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000021-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 115</span>
+115:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">suffix_str</span>(<span class="ruby-identifier">options</span>)
+116:           <span class="ruby-identifier">deferrable_str</span>(<span class="ruby-identifier">options</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">initially_str</span>(<span class="ruby-identifier">options</span>)
+117:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000018" class="method-detail">
+        <a name="M000018"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000018" class="method-signature">
+
+          <span class="method-name">table_str</span><span class="method-args">(column_name, column_constraint, prefix_string = &quot;&quot;)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to produce the additional string needed in a table
+constraint that is not needed in a column constraint. Passed the column
+name (which may be an array of names), the column_constraint flag, and the
+an optional prefix string.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000018-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000018-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 88</span>
+88:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">table_str</span>(<span class="ruby-identifier">column_name</span>, <span class="ruby-identifier">column_constraint</span>, <span class="ruby-identifier">prefix_string</span> = <span class="ruby-value str">&quot;&quot;</span>)
+89:           <span class="ruby-comment cmt"># No space is needed around the parens but it looks nicer with</span>
+90:           <span class="ruby-comment cmt"># spaces.</span>
+91:           <span class="ruby-identifier">column_constraint</span> <span class="ruby-value">? </span><span class="ruby-value str">&quot;&quot;</span> <span class="ruby-operator">:</span>
+92:             <span class="ruby-node">&quot; #{prefix_string}( #{column_to_str(column_name)} )&quot;</span>
+93:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000024" class="method-detail">
+        <a name="M000024"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000024" class="method-signature">
+
+          <span class="method-name">to_db_string</span><span class="method-args">(f)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Simple function to convert symbols and strings to what SQL wants.
+</p>
+<table>
+<tr><td valign="top"><tt>:no_action</tt>:</td><td>goes to &#8220;NO ACTION&#8220;
+
+</td></tr>
+<tr><td valign="top"><tt>:cascade</tt>:</td><td>goes to &#8220;CASCADE&#8220;
+
+</td></tr>
+</table>
+<p>
+etc
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000024-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000024-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 168</span>
+168:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_db_string</span>(<span class="ruby-identifier">f</span>)
+169:           <span class="ruby-identifier">f</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">upcase</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/_/</span>, <span class="ruby-value str">' '</span>)
+170:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000022" class="method-signature">
+
+          <span class="method-name">unique_str</span><span class="method-args">(column_name, options, column_constraint)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Utility routine to produce the string for the UNIQUE constraint. For a
+column constraint, the syntax may be either <tt>:unique =&gt;
+&quot;constraint_name&quot;</tt> or it can be <tt>:unique =&gt; true</tt>
+followed by an optional <tt>:name =&gt; &quot;constraint_name&quot;</tt>.
+If constraint_name is a symbol, it is simply converted to a string.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000022-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraints.rb, line 125</span>
+125:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unique_str</span>(<span class="ruby-identifier">column_name</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">column_constraint</span>)
+126:           <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;IN: Constraints#unique_str&quot;</span>)
+127:           <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">has_constraint</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">:unique</span>)
+128:           <span class="ruby-identifier">constraint_name</span> = <span class="ruby-identifier">name_str</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">:unique</span>)
+129:           <span class="ruby-identifier">column_spec</span> = <span class="ruby-identifier">table_str</span>(<span class="ruby-identifier">column_name</span>, <span class="ruby-identifier">column_constraint</span>)
+130:           <span class="ruby-identifier">suffix_spec</span> = <span class="ruby-identifier">suffix_str</span>(<span class="ruby-identifier">options</span>)
+131:           <span class="ruby-identifier">constraint_name</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot; UNIQUE&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">column_spec</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">suffix_spec</span>
+132:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+
+
+  </div>
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

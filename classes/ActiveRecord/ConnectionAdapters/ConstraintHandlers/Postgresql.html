@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql [PostgresConstraints]</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }<\/style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+
+
+                <a href="../../../../files/lib/activerecord_constraint_handlers_rb.html">
+
+                lib/activerecord_constraint_handlers.rb
+
+                </a>
+
+
+        <br />
+
+            </td>
+        </tr>
+
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+A PostgreSQL specific implementation.
+</p>
+
+    </div>
+
+   </div>
+
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+
+        <a href="#M000002">handle_create_or_update_exception</a>&nbsp;&nbsp;
+
+        <a href="#M000001">included</a>&nbsp;&nbsp;
+
+      </div>
+    </div>
+
+  </div>
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Module <a href="Postgresql/ClassMethods.html" class="link">ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql::ClassMethods</a><br />
+
+    </div>
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">NOT_NULL_REGEXP</td>
+          <td>=</td>
+          <td class="context-item-value">Regexp.new(&quot;PGError: +ERROR: +null value in column \&quot;([^\&quot;]*)\&quot; violates not-null constraint&quot;)</td>
+
+        </tr>
+
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">UNIQUE_REGEXP</td>
+          <td>=</td>
+          <td class="context-item-value">Regexp.new(&quot;PGError: +ERROR: +duplicate key violates unique constraint \&quot;([^\&quot;]+)\&quot;&quot;)</td>
+
+        </tr>
+
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">FOREIGN_REGEXP</td>
+          <td>=</td>
+          <td class="context-item-value">Regexp.new(&quot;PGError: +ERROR: +insert or update on table \&quot;([^\&quot;]+)\&quot; violates &quot; +                                 &quot;foreign key constraint \&quot;([^\&quot;]+)\&quot;&quot;)</td>
+
+        </tr>
+
+        </table>
+      </div>
+    </div>
+
+
+
+
+    <!-- if method_list -->
+
+    <div id="methods">
+
+      <h3 class="section-bar">Public Class methods</h3>
+
+
+      <div id="method-M000001" class="method-detail">
+        <a name="M000001"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000001" class="method-signature">
+
+          <span class="method-name">included</span><span class="method-args">(base)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+When the include of <a
+href="../ConstraintConnectionHook.html">ActiveRecord::ConnectionAdapters::ConstraintConnectionHook</a>
+happens this hook is called with <a
+href="../../Base.html">ActiveRecord::Base</a> as the base. We extend the
+base with the class methods so they are class methods and the instance
+variables are then class instance variables.
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000001-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 197</span>
+197:         <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">included</span>(<span class="ruby-identifier">base</span>)
+198:           <span class="ruby-identifier">base</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">ClassMethods</span>)
+199:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+
+      <div id="method-M000002" class="method-detail">
+        <a name="M000002"></a>
+
+        <div class="method-heading">
+
+          <a href="#M000002" class="method-signature">
+
+          <span class="method-name">handle_create_or_update_exception</span><span class="method-args">(e)</span>
+
+          </a>
+
+        </div>
+
+        <div class="method-description">
+
+          <p>
+Called with exception when create_or_update throws an exception
+</p>
+
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000002-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/activerecord_constraint_handlers.rb, line 202</span>
+202:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">handle_create_or_update_exception</span>(<span class="ruby-identifier">e</span>)
+203:           <span class="ruby-identifier">raise</span> <span class="ruby-identifier">e</span> <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">StatementInvalid</span>
+204:           <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;trace_report create_or_update error is '#{e.message}'&quot;</span>)
+205:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span> = <span class="ruby-constant">NOT_NULL_REGEXP</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+206:             <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">to_sym</span>, <span class="ruby-value str">&quot;can't be blank&quot;</span>)
+207:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">md</span> = <span class="ruby-constant">UNIQUE_REGEXP</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+208:             <span class="ruby-identifier">constraint</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+209:             <span class="ruby-identifier">ffoo</span>(<span class="ruby-identifier">constraint</span>, <span class="ruby-value str">&quot;has already been taken&quot;</span>)
+210:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">md</span> = <span class="ruby-constant">FOREIGN_REGEXP</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+211:             <span class="ruby-identifier">table</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+212:             <span class="ruby-identifier">constraint</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>]
+213:             <span class="ruby-identifier">ffoo</span>(<span class="ruby-identifier">constraint</span>, <span class="ruby-value str">&quot;is invalid&quot;</span>)
+214:           <span class="ruby-keyword kw">else</span>
+215:             <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;Nothing matched&quot;</span>)
+216:           <span class="ruby-keyword kw">end</span>
+217:           <span class="ruby-keyword kw">false</span>
+218:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+
+
+  </div>
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
