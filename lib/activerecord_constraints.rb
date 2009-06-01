@@ -173,14 +173,14 @@ module ActiveRecord
         # constraint.  Like a UNIQUE constraint, the optional name of
         # the constraint can either the string assigned to the
         # :reference option or a separate :name option.
-        def reference_str(column, options, column_constraint)
+        def reference_str(column_name, options, column_constraint)
           ActiveRecord::Base.logger.debug("IN: Constraints#reference_str")
           return "" unless has_constraint(options, :reference)
           constraint_name = name_str(options, :reference)
           column_spec = table_str(column_name, column_constraint,
                                   "FOREIGN KEY ")
           local_options = { }
-          if md = /(.*)_id$/.match(column.to_s)
+          if md = /(.*)_id$/.match(column_name.to_s)
             local_options[:table_name] = md[1].pluralize
             local_options[:foreign_key] = "id"
           end
@@ -196,7 +196,7 @@ module ActiveRecord
             ref_str << " ON UPDATE #{to_db_string(local_options[:update])}"
           end
           
-          constraint_name + column_spec + ref_str + suffix_spec(options)
+          constraint_name + column_spec + ref_str + suffix_str(options)
         end
         
         # Utility routine to return the column or the array of columns
