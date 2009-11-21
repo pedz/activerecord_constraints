@@ -19,3 +19,22 @@
 
 require 'activerecord_constraints'
 require 'activerecord_constraint_handlers'
+
+ActiveRecord::Base.schema_format = :sql
+
+module ::ActiveRecord
+  module ConnectionAdapters
+    class PostgreSQLAdapter
+      def disable_referential_integrity(&block)
+        transaction {
+          begin
+            execute "SET CONSTRAINTS ALL DEFERRED"
+            yield
+          ensure
+            execute "SET CONSTRAINTS ALL IMMEDIATE"
+          end
+        }
+      end
+    end
+  end
+end
