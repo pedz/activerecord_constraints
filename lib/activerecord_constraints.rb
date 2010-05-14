@@ -341,7 +341,7 @@ module ActiveRecord
           :delete => :cascade,
           :deferrable => true
         }.merge(names.last.is_a?(Hash) ? names.pop : { })
-        self.integer(names, options)
+        self.integer(*names, options)
       end
       
       # Add a "unique" method to TableDefinition.  e.g.
