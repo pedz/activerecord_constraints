@@ -49,7 +49,7 @@ module ActiveRecord
       module Postgresql
     
         NOT_NULL_REGEXP = Regexp.new("PGError: +ERROR: +null value in column \"([^\"]*)\" violates not-null constraint")
-        UNIQUE_REGEXP = Regexp.new("PGError: +ERROR: +duplicate key violates unique constraint \"([^\"]+)\"")
+        UNIQUE_REGEXP = Regexp.new("PGError: +ERROR: +duplicate key .*violates unique constraint \"([^\"]+)\"")
         FOREIGN_REGEXP = Regexp.new("PGError: +ERROR: +insert or update on table \"([^\"]+)\" violates " +
                                 "foreign key constraint \"([^\"]+)\"")
         #
