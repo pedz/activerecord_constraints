@@ -76,7 +76,7 @@ module ActiveRecord
           if options[constraint_type] == true
             n = options[:name]
           else
-            n = options[option_name]
+            n = options[constraint_type]
           end
           n.blank? ? "" : " CONSTRAINT #{n}"
         end
