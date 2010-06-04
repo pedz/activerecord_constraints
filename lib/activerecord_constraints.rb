@@ -127,8 +127,7 @@ module ActiveRecord
           return "" unless has_constraint(options, :unique)
           constraint_name = name_str(options, :unique)
           column_spec = table_str(column_name, column_constraint)
-          suffix_spec = suffix_str(options)
-          constraint_name + " UNIQUE" + column_spec + suffix_spec
+          constraint_name + " UNIQUE" + column_spec
         end
         
         # Utility routine to produce the string for a CHECK constraint.
@@ -156,8 +155,7 @@ module ActiveRecord
           end
           constraint_name = name_str({ :name => name, :check => true }, :check)
           # column string is not part of CHECK constraints
-          suffix_spec = suffix_str(options)
-          constraint_name + " CHECK ( #{expr} )" + suffix_spec
+          constraint_name + " CHECK ( #{expr} )"
         end
         
         # Simple function to convert symbols and strings to what SQL
@@ -196,7 +194,7 @@ module ActiveRecord
             ref_str << " ON UPDATE #{to_db_string(local_options[:update])}"
           end
           
-          constraint_name + column_spec + ref_str + suffix_str(options)
+          constraint_name + column_spec + ref_str
         end
         
         # Utility routine to return the column or the array of columns
@@ -237,6 +235,7 @@ module ActiveRecord
         sql << unique_str(column_name, options, true)
         sql << reference_str(column_name, options, true)
         sql << check_str(column_name, options, true)
+        sql << suffix_str(options)
       end
       alias_method_chain :add_column_options!, :constraints
     end
@@ -376,6 +375,10 @@ module ActiveRecord
       # :foreign_key option may be an array.
       # :delete option may be passed in with the appropriate value
       # such as :restrict, :cascade, etc.
+      #
+      # This might be broken because "deferrable" is not available
+      # where it use to be before.
+      #
       def reference(column, options = { })
         ActiveRecord::Base.logger.debug("IN: TableDefinition#reference")
         extra_str << ", #{reference_str(column, options, false)}"
