@@ -37,7 +37,7 @@ module ActiveRecord
     # exception is thrown, then the adapter specific
     # handle_create_or_update_exception is called.
     #
-    # The third hook is also in the create_or_update.  Before the cal
+    # The third hook is also in the create_or_update.  Before the call
     # to create_or_update_witout_constraints is done, the class
     # specific pre_fetch method is called.  Again, this method is
     # included into the class of the model at the time the connection
@@ -86,11 +86,13 @@ module ActiveRecord
 
           # Turns out, we don't really use this...
           def pg_class
+            ActiveRecord::Base.logger.debug("pg_class")
             @pg_class ||= pg_class_constant.find_by_relname(table_name)
           end
           
           # Find the constraints for this model / table
           def pg_constraints
+            ActiveRecord::Base.logger.debug("pg_constraints")
             if @pg_constraints.nil?
               @pg_constraints = pg_constraint_constant.find(:all,
                                                             :joins => :conrel,
@@ -111,6 +113,7 @@ module ActiveRecord
           
           # Find the attributes for this model
           def pg_attributes
+            ActiveRecord::Base.logger.debug("pg_attributes")
             if @pg_attributes.nil?
               @pg_attributes = pg_attribute_constant.find(:all,
                                                           :joins => :attrel,
@@ -130,22 +133,26 @@ module ActiveRecord
           # for the code above as a nested subclass of the model using
           # the model as the base.
           def create_subclasses
+            ActiveRecord::Base.logger.debug("create_subclasses")
             self.class_eval <<-EOF
               class PgClass < #{self}
                 set_table_name "pg_class"
                 set_primary_key "oid"
+                self.default_scoping = []
               end
 
               class PgAttribute < #{self}
                 set_table_name "pg_attribute"
                 set_primary_key "oid"
                 belongs_to :attrel, :class_name => "PgClass", :foreign_key => :attrelid
+                self.default_scoping = []
               end
 
               class PgConstraint < #{self}
                 set_table_name "pg_constraint"
                 set_primary_key "oid"
                 belongs_to :conrel, :class_name => "PgClass", :foreign_key => :conrelid
+                self.default_scoping = []
               end
             EOF
           end
