@@ -23,6 +23,8 @@
 # <http://www.gnu.org/licenses/>.
 
 require 'active_record'
+require 'active_record/base'
+require 'active_record/connection_adapters/abstract_adapter'
 
 # PostgresConstraints
 module ActiveRecord
