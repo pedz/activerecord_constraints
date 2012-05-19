@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'activerecord_constraints'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.summary     = "Nice constraint helpers for Rails and PostgreSQL"
   s.description = "This plugin currently implements constraints for PostgreSQL only.  It
 should provide a structure for a more abstract implementation.

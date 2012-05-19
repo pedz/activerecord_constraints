@@ -231,6 +231,8 @@ module ActiveRecord
       # clauses to the sql statement.
       def add_column_options_with_constraints!(sql, options)
         ActiveRecord::Base.logger.debug("IN: SchemaStatements#add_column_options_with_constraints!")
+        # Add this in if you need the stack trace when this is called.
+        # ActiveRecord::Base.logger.debug("#{caller[0 .. 10].join("\n")}")
 
         # TODO:
         # This needs to dig out the database type of the connection
@@ -238,7 +240,14 @@ module ActiveRecord
         extend Constraints::Postgresql
 
         add_column_options_without_constraints!(sql, options)
-        column_name = options[:column].name
+        if options.has_key? :column
+          # This is code that may never have worked.
+          column_name = options[:column].name
+        else
+          raise ArgumentError.new("Can't pasrse SQL #{sql} to find column name") unless
+            md = Regexp.new('.* add column[ "]+([^ "]+)[" ]+.*', Regexp::IGNORECASE).match(sql)
+          column_name = md[1]
+        end
         sql << unique_str(column_name, options, true)
         sql << reference_str(column_name, options, true)
         sql << check_str(column_name, options, true)
