@@ -53,9 +53,9 @@ module ActiveRecord
       # A PostgreSQL specific implementation.
       module Postgresql
     
-        NOT_NULL_REGEXP = Regexp.new("PGError: +ERROR: +null value in column \"([^\"]*)\" violates not-null constraint")
-        UNIQUE_REGEXP = Regexp.new("PGError: +ERROR: +duplicate key .*violates unique constraint \"([^\"]+)\"")
-        FOREIGN_REGEXP = Regexp.new("PGError: +ERROR: +insert or update on table \"([^\"]+)\" violates " +
+        NOT_NULL_REGEXP = Regexp.new("PG:?:?Error: +ERROR: +null value in column \"([^\"]*)\" violates not-null constraint")
+        UNIQUE_REGEXP = Regexp.new("PG:?:?Error: +ERROR: +duplicate key .*violates unique constraint \"([^\"]+)\"")
+        FOREIGN_REGEXP = Regexp.new("PG:?:?Error: +ERROR: +insert or update on table \"([^\"]+)\" violates " +
                                 "foreign key constraint \"([^\"]+)\"")
         #
         # We need class methods and class instance variables to hold
