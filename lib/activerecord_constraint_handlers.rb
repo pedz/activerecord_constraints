@@ -143,21 +143,18 @@ module ActiveRecord
               class PgClass < #{self}
                 set_table_name "pg_class"
                 set_primary_key "oid"
-                self.default_scoping = []
               end
 
               class PgAttribute < #{self}
                 set_table_name "pg_attribute"
                 set_primary_key "oid"
                 belongs_to :attrel, :class_name => "PgClass", :foreign_key => :attrelid
-                self.default_scoping = []
               end
 
               class PgConstraint < #{self}
                 set_table_name "pg_constraint"
                 set_primary_key "oid"
                 belongs_to :conrel, :class_name => "PgClass", :foreign_key => :conrelid
-                self.default_scoping = []
               end
             EOF
           end
@@ -288,7 +285,7 @@ module ActiveRecord
     # Postgres needs a hook so it can load some tables when the
     # connection is first opened.  Other DB's may need a similar hook
     include ActiveRecord::ConnectionAdapters::ConstraintConnectionHook
-
+    include ActiveRecord::ConnectionAdapters::ConstraintHandlers::Postgresql
     # Insert into the create_or_update call chain
     def create_or_update_with_constraints
       begin
