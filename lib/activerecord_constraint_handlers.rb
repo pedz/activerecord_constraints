@@ -92,16 +92,14 @@ module ActiveRecord
           # Turns out, we don't really use this...
           def pg_class
             ActiveRecord::Base.logger.debug("pg_class")
-            @pg_class ||= pg_class_constant.find_by_relname(table_name)
+            @pg_class ||= pg_class_constant.unscoped.find_by_relname(table_name)
           end
           
           # Find the constraints for this model / table
           def pg_constraints
             ActiveRecord::Base.logger.debug("pg_constraints")
             if @pg_constraints.nil?
-              @pg_constraints = pg_constraint_constant.find(:all,
-                                                            :joins => :conrel,
-                                                            :conditions => { :pg_class => { :relname => table_name }})
+              @pg_constraints = pg_constraint_constant.unscoped.joins(:conrel).where(:pg_class => { :relname => table_name }).all
               @pg_constraint_hash = Hash.new
               @pg_constraints.each { |c|
                 ActiveRecord::Base.logger.debug("Adding '#{c.conname}' to constraint_hash")
@@ -120,9 +118,7 @@ module ActiveRecord
           def pg_attributes
             ActiveRecord::Base.logger.debug("pg_attributes")
             if @pg_attributes.nil?
-              @pg_attributes = pg_attribute_constant.find(:all,
-                                                          :joins => :attrel,
-                                                          :conditions => { :pg_class => { :relname => table_name }})
+              @pg_attributes = pg_attribute_constant.unscoped.joins(:attrel).where(:pg_class => { :relname => table_name })
               @pg_attribute_hash = Hash.new
               @pg_attributes.each { |a| @pg_attribute_hash[a.attnum] = a }
             end
